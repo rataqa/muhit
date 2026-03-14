@@ -1,0 +1,42 @@
+{
+  "name": "@rataqa/muhit",
+  "version": "1.0.0",
+  "description": "Library to work with Node environment settings",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "build:ts": "tsc --project tsconfig.build.json",
+    "build": "npm-run-all clean build:ts",
+    "test": "node -r ts-node/register --test src/__tests__/*.test.ts",
+    "test:coverage": "node -r ts-node/register --experimental-test-coverage --test src/__tests__/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^6.1.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "homepage": "https://github.com/rataqa/muhit#readme",
+  "bugs": {
+    "url": "https://github.com/rataqa/muhit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rataqa/muhit.git"
+  },
+  "license": "MIT",
+  "author": "Rataqa Team",
+  "keywords": [
+    "environment",
+    "settings",
+    "process.env",
+    "configuration",
+    "config"
+  ]
+}
