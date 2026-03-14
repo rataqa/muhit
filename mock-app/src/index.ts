@@ -1,15 +1,24 @@
+import dotenv from 'dotenv';
 import express, { Request, Response, NextFunction } from 'express';
 import { randomInt, randomUUID } from 'node:crypto';
-import { IAxiosFactory, makeAxiosFactory } from '@rataqa/jalb';
-import { makeLogger, type IBasicLogger } from '@rataqa/sijil';
+
+import { makeAxiosFactory } from '@rataqa/jalb';
+import { makeLogger } from '@rataqa/sijil';
+import { IRequest, IResponse, MyEnvSettings } from './types';
+import { makeServiceA } from './service';
+
+dotenv.config();
 
 const app = express();
 
+const env = new MyEnvSettings(process.env);
+const config = env.config();
+
 const appInfo = { appName: 'mock-app', appVersion: '1.2.3' };
 
-const logger = makeLogger('pino', appInfo, { level: 'info' });
+const logger = makeLogger('pino', appInfo, { level: config.logger.level });
 
-const exampleDotCom = makeAxiosFactory('http://example.com', { headers: { 'x-api-key': '12345' } });
+const exampleDotCom = makeAxiosFactory(config.serviceA.baseURL, { headers: config.serviceA.headers }, logger.defaultLogger);
 
 const serviceA = makeServiceA(exampleDotCom);
 
@@ -48,49 +57,6 @@ app.post('/', async (req: IRequest, res: IResponse) => {
   res.send(result);
 });
 
-app.listen(3000, () => {
-  logger.defaultLogger.info('Server is running on port 3000');
+app.listen(config.http.port, () => {
+  logger.defaultLogger.info('Server is running on port ' + config.http.port);
 });
-
-interface IInputToGet {
-  lat: number;
-  lon: number;
-}
-
-type IRequest = Request<any, any, IInputToGet>;
-
-type IResponse<TBody = any> = Response<TBody, IResLocals>;
-
-interface IResLocals {
-  ctx: IAppCtx;
-  reqLogger: IBasicLogger;
-}
-
-interface IAppCtx {
-  t0: Date;
-  correlation_id: string;
-}
-
-function makeServiceA(ax: IAxiosFactory) {
-
-  function apiPerRequest(ctx: IAppCtx, rl: IBasicLogger) {
-
-    const http = ax.makeAxiosPerRequest({ 'x-correlation-id': ctx.correlation_id }, rl);
-
-    async function homePage(lat: number, lon: number) {
-      rl.info('homePage()', { lat, lon });
-      const result = await http.get('/');
-
-      return result.data;
-    }
-
-    return {
-      http,
-      homePage,
-    };
-  }
-
-  return {
-    apiPerRequest,
-  };
-}
