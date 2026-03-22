@@ -1,4 +1,4 @@
-# muhit
+# rataqa/muhit
 
 Library to work with Node environment settings
 
@@ -30,4 +30,7 @@ npm publish --access=public
 npm i @rataqa/muhit
 ```
 
-Example: see [mock-app/](mock-app)
+Example:
+
+* [src/__tests__](src/__tests__)
+* Check demo apps in https://github.com/rataqa/demo
